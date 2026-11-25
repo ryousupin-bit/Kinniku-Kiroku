@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kinniku-v21';
+const CACHE_NAME = 'kinniku-v22';
 const ASSETS = [
   './',
   './index.html',
@@ -38,6 +38,28 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const isCodeAsset =
+    event.request.mode === 'navigate' ||
+    /\.(html|css|js|json)$/i.test(url.pathname) ||
+    url.pathname.endsWith('/');
+
+  if (isCodeAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request)

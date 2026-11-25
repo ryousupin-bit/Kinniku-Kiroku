@@ -414,6 +414,14 @@
   function applyTheme() {
     const isDark = state.settings.darkMode !== false;
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    const isStandalone =
+      window.navigator?.standalone === true ||
+      Boolean(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    if (isStandalone) {
+      document.documentElement.setAttribute('data-standalone', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-standalone');
+    }
     const meta = document.getElementById('meta-theme-color');
     if (meta) meta.setAttribute('content', isDark ? '#090A0D' : '#F1F2F5');
     const toggle = document.getElementById('setting-dark-mode');

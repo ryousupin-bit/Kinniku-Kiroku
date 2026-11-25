@@ -122,6 +122,11 @@ html, body {
   }
 }
 
+/* iOS Standalone Status-Bar Color Extension Strip (disables iOS 26/27 top progressive blur) */
+.ios-status-strip {
+  display: none;
+}
+
 /* Header */
 .app-header {
   position: sticky;
@@ -134,6 +139,46 @@ html, body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (display-mode: standalone) {
+    .ios-status-strip {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+      z-index: 999;
+      pointer-events: none;
+      background-color: var(--bg);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .app-header {
+      padding-top: calc(13px + var(--safe-top) + clamp(0px, var(--safe-top), 28px));
+    }
+  }
+
+  :root[data-standalone="true"] .ios-status-strip {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 12px;
+    z-index: 999;
+    pointer-events: none;
+    background-color: var(--bg);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  :root[data-standalone="true"] .app-header {
+    padding-top: calc(13px + var(--safe-top) + clamp(0px, var(--safe-top), 28px));
+  }
 }
 
 .brand-group {
