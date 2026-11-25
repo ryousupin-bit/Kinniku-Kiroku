@@ -128,9 +128,7 @@ html, body {
   top: 0;
   z-index: 30;
   padding: calc(13px + var(--safe-top)) 16px 13px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -176,7 +174,7 @@ html, body {
 
 .header-subtitle {
   font-size: 11.5px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   letter-spacing: 0.01em;
 }

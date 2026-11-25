@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kinniku-v20';
+const CACHE_NAME = 'kinniku-v21';
 const ASSETS = [
   './',
   './index.html',
