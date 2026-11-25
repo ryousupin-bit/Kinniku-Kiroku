@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kinniku-v18';
+const CACHE_NAME = 'kinniku-v19';
 const ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,11 @@ const ASSETS = [
   './shiba-body.png',
   './shiba-tail.png',
   './logo-fitplace.png',
-  './logo-totalworkout.png'
+  './logo-totalworkout.png',
+  './part-back.png',
+  './part-chest.png',
+  './part-shoulders.png',
+  './part-legs.png'
 ];
 
 self.addEventListener('install', (event) => {
