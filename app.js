@@ -88,6 +88,88 @@
   }
 
   // ---------- Default Data ----------
+  const PRESET_VERSION = 2;
+
+  function createPresetExercises() {
+    const mk = (id, gymId, part, name, unit, barPreset = 'none', barWeight = 0, barUnit = unit, plateMode = 'total') => ({
+      id,
+      gymId,
+      part,
+      name,
+      unit,
+      barPreset,
+      barWeight,
+      barUnit,
+      plateMode
+    });
+
+    return [
+      // Fitplace永山 (kg)
+      // 背中
+      mk('ex_fp_back_1', 'gym_fitplace', 'back', 'チンニング', 'kg'),
+      mk('ex_fp_back_2', 'gym_fitplace', 'back', 'ラットプル', 'kg'),
+      mk('ex_fp_back_3', 'gym_fitplace', 'back', 'プーリーロウ', 'kg'),
+      mk('ex_fp_back_4', 'gym_fitplace', 'back', 'マシンローイング', 'kg'),
+      mk('ex_fp_back_5', 'gym_fitplace', 'back', 'ダンベルローイング', 'kg'),
+      mk('ex_fp_back_6', 'gym_fitplace', 'back', 'インクラインダンベルカール', 'kg'),
+      mk('ex_fp_back_7', 'gym_fitplace', 'back', 'バーベルカール', 'kg', 'ez10', 10, 'kg', 'per_side'),
+      // 胸
+      mk('ex_fp_chest_1', 'gym_fitplace', 'chest', 'インクラインベンチプレス', 'kg', 'olympic20', 20, 'kg', 'per_side'),
+      mk('ex_fp_chest_2', 'gym_fitplace', 'chest', 'チェストプレス', 'kg'),
+      mk('ex_fp_chest_3', 'gym_fitplace', 'chest', 'ディップス', 'kg'),
+      mk('ex_fp_chest_4', 'gym_fitplace', 'chest', 'ケーブルクロス', 'kg'),
+      mk('ex_fp_chest_5', 'gym_fitplace', 'chest', 'ペックフライ', 'kg'),
+      mk('ex_fp_chest_6', 'gym_fitplace', 'chest', 'インクラインダンベルフライ', 'kg'),
+      mk('ex_fp_chest_7', 'gym_fitplace', 'chest', 'インクラインダンベルプレス', 'kg'),
+      mk('ex_fp_chest_8', 'gym_fitplace', 'chest', 'オーバーヘッド三頭', 'kg'),
+      mk('ex_fp_chest_9', 'gym_fitplace', 'chest', 'スカルクラッシャー', 'kg', 'ez10', 10, 'kg', 'per_side'),
+      mk('ex_fp_chest_10', 'gym_fitplace', 'chest', 'ケーブルプレスダウン', 'kg'),
+      // 肩
+      mk('ex_fp_sh_1', 'gym_fitplace', 'shoulders', 'スミスショルダープレス（後ろ）', 'kg', 'smith12', 12, 'kg', 'per_side'),
+      mk('ex_fp_sh_2', 'gym_fitplace', 'shoulders', 'スミスショルダープレス（前）', 'kg', 'smith12', 12, 'kg', 'per_side'),
+      mk('ex_fp_sh_3', 'gym_fitplace', 'shoulders', 'ショルダープレスマシン', 'kg'),
+      mk('ex_fp_sh_4', 'gym_fitplace', 'shoulders', 'リアペックフライ', 'kg'),
+      mk('ex_fp_sh_5', 'gym_fitplace', 'shoulders', 'サイドレイズ', 'kg'),
+      // 脚
+      mk('ex_fp_legs_1', 'gym_fitplace', 'legs', 'スクワット', 'kg', 'olympic20', 20, 'kg', 'per_side'),
+      mk('ex_fp_legs_2', 'gym_fitplace', 'legs', 'ランジ', 'kg'),
+      mk('ex_fp_legs_3', 'gym_fitplace', 'legs', 'レッグエクステンション', 'kg'),
+      mk('ex_fp_legs_4', 'gym_fitplace', 'legs', 'レッグカール', 'kg'),
+
+      // トータル・ワークアウト六本木 (lb)
+      // 背中
+      mk('ex_tw_back_1', 'gym_totalworkout', 'back', 'チンニング', 'lb'),
+      mk('ex_tw_back_2', 'gym_totalworkout', 'back', 'ラットプル', 'lb'),
+      mk('ex_tw_back_3', 'gym_totalworkout', 'back', 'プーリーロウ', 'lb'),
+      mk('ex_tw_back_4', 'gym_totalworkout', 'back', 'マシンローイング', 'lb'),
+      mk('ex_tw_back_5', 'gym_totalworkout', 'back', 'ダンベルローイング', 'lb'),
+      mk('ex_tw_back_6', 'gym_totalworkout', 'back', 'インクラインダンベルカール', 'lb'),
+      mk('ex_tw_back_7', 'gym_totalworkout', 'back', 'バーベルカール', 'lb', 'ez10', 10, 'kg', 'per_side'),
+      // 胸
+      mk('ex_tw_chest_1', 'gym_totalworkout', 'chest', 'インクラインベンチプレス', 'lb', 'olympic45lb', 45, 'lb', 'per_side'),
+      mk('ex_tw_chest_2', 'gym_totalworkout', 'chest', 'チェストプレス', 'lb'),
+      mk('ex_tw_chest_3', 'gym_totalworkout', 'chest', 'ディップス', 'lb'),
+      mk('ex_tw_chest_4', 'gym_totalworkout', 'chest', 'ケーブルクロス', 'lb'),
+      mk('ex_tw_chest_5', 'gym_totalworkout', 'chest', 'ペックフライ', 'lb'),
+      mk('ex_tw_chest_6', 'gym_totalworkout', 'chest', 'インクラインダンベルフライ', 'lb'),
+      mk('ex_tw_chest_7', 'gym_totalworkout', 'chest', 'インクラインダンベルプレス', 'lb'),
+      mk('ex_tw_chest_8', 'gym_totalworkout', 'chest', 'オーバーヘッド三頭', 'lb'),
+      mk('ex_tw_chest_9', 'gym_totalworkout', 'chest', 'スカルクラッシャー', 'lb', 'ez10', 10, 'kg', 'per_side'),
+      mk('ex_tw_chest_10', 'gym_totalworkout', 'chest', 'ケーブルプレスダウン', 'lb'),
+      // 肩
+      mk('ex_tw_sh_1', 'gym_totalworkout', 'shoulders', 'スミスショルダープレス（後ろ）', 'lb', 'smith12', 12, 'kg', 'per_side'),
+      mk('ex_tw_sh_2', 'gym_totalworkout', 'shoulders', 'スミスショルダープレス（前）', 'lb', 'smith12', 12, 'kg', 'per_side'),
+      mk('ex_tw_sh_3', 'gym_totalworkout', 'shoulders', 'ショルダープレスマシン', 'lb'),
+      mk('ex_tw_sh_4', 'gym_totalworkout', 'shoulders', 'リアペックフライ', 'lb'),
+      mk('ex_tw_sh_5', 'gym_totalworkout', 'shoulders', 'サイドレイズ', 'lb'),
+      // 脚
+      mk('ex_tw_legs_1', 'gym_totalworkout', 'legs', 'スクワット', 'lb', 'olympic45lb', 45, 'lb', 'per_side'),
+      mk('ex_tw_legs_2', 'gym_totalworkout', 'legs', 'レッグプレス', 'lb'),
+      mk('ex_tw_legs_3', 'gym_totalworkout', 'legs', 'レッグエクステンション', 'lb'),
+      mk('ex_tw_legs_4', 'gym_totalworkout', 'legs', 'ライイングレッグカール', 'lb')
+    ];
+  }
+
   function createDefaultState() {
     const today = todayStr();
     return {
@@ -95,36 +177,15 @@
         { id: 'gym_fitplace', name: 'Fitplace永山', note: 'kg表記中心' },
         { id: 'gym_totalworkout', name: 'トータル・ワークアウト六本木', note: 'lb表記マシン・フリーウェイト' }
       ],
-      exercises: [
-        // Fitplace永山
-        { id: 'ex_fp_1', gymId: 'gym_fitplace', part: 'back', name: 'ラットプルダウン', unit: 'kg', barPreset: 'none', barWeight: 0, barUnit: 'kg', plateMode: 'total' },
-        { id: 'ex_fp_2', gymId: 'gym_fitplace', part: 'back', name: 'ベントオーバーロウ', unit: 'kg', barPreset: 'olympic20', barWeight: 20, barUnit: 'kg', plateMode: 'per_side' },
-        { id: 'ex_fp_3', gymId: 'gym_fitplace', part: 'back', name: 'シーテッドロウ', unit: 'kg', barPreset: 'none', barWeight: 0, barUnit: 'kg', plateMode: 'total' },
-        { id: 'ex_fp_4', gymId: 'gym_fitplace', part: 'chest', name: 'ベンチプレス', unit: 'kg', barPreset: 'olympic20', barWeight: 20, barUnit: 'kg', plateMode: 'per_side' },
-        { id: 'ex_fp_5', gymId: 'gym_fitplace', part: 'chest', name: 'インクラインダンベルプレス', unit: 'kg', barPreset: 'none', barWeight: 0, barUnit: 'kg', plateMode: 'total' },
-        { id: 'ex_fp_6', gymId: 'gym_fitplace', part: 'chest', name: 'スミスインクラインプレス', unit: 'kg', barPreset: 'smith12', barWeight: 12, barUnit: 'kg', plateMode: 'per_side' },
-        { id: 'ex_fp_7', gymId: 'gym_fitplace', part: 'shoulders', name: 'サイドレイズ', unit: 'kg', barPreset: 'none', barWeight: 0, barUnit: 'kg', plateMode: 'total' },
-        { id: 'ex_fp_8', gymId: 'gym_fitplace', part: 'shoulders', name: 'ショルダープレス', unit: 'kg', barPreset: 'olympic20', barWeight: 20, barUnit: 'kg', plateMode: 'per_side' },
-        { id: 'ex_fp_9', gymId: 'gym_fitplace', part: 'legs', name: 'バーベルスクワット', unit: 'kg', barPreset: 'olympic20', barWeight: 20, barUnit: 'kg', plateMode: 'per_side' },
-        { id: 'ex_fp_10', gymId: 'gym_fitplace', part: 'legs', name: 'レッグプレス', unit: 'kg', barPreset: 'none', barWeight: 0, barUnit: 'kg', plateMode: 'per_side' },
-
-        // トータル・ワークアウト六本木
-        { id: 'ex_tw_1', gymId: 'gym_totalworkout', part: 'back', name: 'ラットプルダウン', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'total' },
-        { id: 'ex_tw_2', gymId: 'gym_totalworkout', part: 'back', name: 'ハンマーストレングス ローロウ', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'per_side' },
-        { id: 'ex_tw_3', gymId: 'gym_totalworkout', part: 'chest', name: 'ベンチプレス (45lbバー)', unit: 'lb', barPreset: 'olympic45lb', barWeight: 45, barUnit: 'lb', plateMode: 'per_side' },
-        { id: 'ex_tw_4', gymId: 'gym_totalworkout', part: 'chest', name: 'チェストプレス', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'total' },
-        { id: 'ex_tw_5', gymId: 'gym_totalworkout', part: 'shoulders', name: 'マシンショルダープレス', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'total' },
-        { id: 'ex_tw_6', gymId: 'gym_totalworkout', part: 'shoulders', name: 'ダンベルサイドレイズ', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'total' },
-        { id: 'ex_tw_7', gymId: 'gym_totalworkout', part: 'legs', name: 'ハックスクワット', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'per_side' },
-        { id: 'ex_tw_8', gymId: 'gym_totalworkout', part: 'legs', name: 'レッグエクステンション', unit: 'lb', barPreset: 'none', barWeight: 0, barUnit: 'lb', plateMode: 'total' }
-      ],
+      exercises: createPresetExercises(),
       logs: {},
       exerciseRecords: {},
       settings: {
         rotationStart: today,
         rotation: ['back', 'chest', 'shoulders', 'legs'],
         darkMode: true,
-        selectedGymId: 'gym_fitplace'
+        selectedGymId: 'gym_fitplace',
+        presetVersion: PRESET_VERSION
       }
     };
   }
@@ -208,7 +269,27 @@
       if (!parsed || !Array.isArray(parsed.gyms) || !Array.isArray(parsed.exercises)) {
         return createDefaultState();
       }
-      if (!parsed.exerciseRecords || typeof parsed.exerciseRecords !== 'object') {
+      if (!parsed.settings) parsed.settings = {};
+      if ((parsed.settings.presetVersion || 1) < PRESET_VERSION) {
+        const nextPresets = createPresetExercises();
+        // Keep any user-added custom exercises not matching old default IDs
+        const customExercises = parsed.exercises.filter(
+          (ex) => !/^ex_(fp|tw)_\d+$/.test(ex.id) && !nextPresets.some((p) => p.gymId === ex.gymId && p.name === ex.name)
+        );
+        parsed.exercises = [...nextPresets, ...customExercises];
+        // Re-map existing log sets to new preset IDs when gymId & name match
+        Object.values(parsed.logs || {}).forEach((log) => {
+          (log?.sets || []).forEach((s) => {
+            const matched = parsed.exercises.find((ex) => ex.gymId === s.gymId && ex.name === s.exerciseName);
+            if (matched) s.exerciseId = matched.id;
+          });
+        });
+        parsed.settings.presetVersion = PRESET_VERSION;
+        syncAllExerciseRecords(parsed);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        } catch {}
+      } else if (!parsed.exerciseRecords || typeof parsed.exerciseRecords !== 'object') {
         syncAllExerciseRecords(parsed);
       }
       return parsed;
