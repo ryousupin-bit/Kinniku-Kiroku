@@ -87,6 +87,34 @@
       .replace(/"/g, '&quot;');
   }
 
+  function getGymLogo(gym) {
+    if (!gym) return null;
+    if (gym.id === 'gym_fitplace' || /fit\s*place/i.test(gym.name || '')) {
+      return { src: './logo-fitplace.png', brand: 'fitplace' };
+    }
+    if (gym.id === 'gym_totalworkout' || /トータル|total\s*workout/i.test(gym.name || '')) {
+      return { src: './logo-totalworkout.png', brand: 'totalworkout' };
+    }
+    return null;
+  }
+
+  function renderGymPillHtml(g, isActive, dataAttr) {
+    const logo = getGymLogo(g);
+    if (logo) {
+      return `
+        <button type="button" class="gym-pill has-logo brand-${logo.brand} ${isActive ? 'active' : ''}" ${dataAttr}="${g.id}" aria-label="${escapeHtml(g.name)}">
+          <img class="gym-logo-img" src="${logo.src}" alt="${escapeHtml(g.name)}" />
+        </button>
+      `;
+    }
+    return `
+      <button type="button" class="gym-pill ${isActive ? 'active' : ''}" ${dataAttr}="${g.id}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${escapeHtml(g.name)}
+      </button>
+    `;
+  }
+
   // ---------- Default Data ----------
   const PRESET_VERSION = 2;
 
@@ -659,14 +687,7 @@
     }
     const gymPills = document.getElementById('log-gym-pills');
     gymPills.innerHTML = state.gyms
-      .map(
-        (g) => `
-      <button type="button" class="gym-pill ${g.id === state.settings.selectedGymId ? 'active' : ''}" data-gym-id="${g.id}">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        ${escapeHtml(g.name)}
-      </button>
-    `
-      )
+      .map((g) => renderGymPillHtml(g, g.id === state.settings.selectedGymId, 'data-gym-id'))
       .join('');
 
     gymPills.querySelectorAll('.gym-pill').forEach((btn) => {
@@ -1315,10 +1336,14 @@
     gymsContainer.innerHTML = state.gyms
       .map((g) => {
         const count = state.exercises.filter((e) => e.gymId === g.id).length;
+        const logo = getGymLogo(g);
+        const titleHtml = logo
+          ? `<div class="gym-list-logo-wrap brand-${logo.brand}"><img class="gym-logo-list" src="${logo.src}" alt="${escapeHtml(g.name)}" /></div>`
+          : `<div class="list-item-title">${escapeHtml(g.name)}</div>`;
         return `
           <div class="list-item">
             <div class="list-item-main">
-              <div class="list-item-title">${escapeHtml(g.name)}</div>
+              ${titleHtml}
               <div class="list-item-sub">${escapeHtml(g.note || 'メモなし')} ・ 登録種目 ${count}件</div>
             </div>
             <div style="display:flex; gap:6px;">
@@ -1359,13 +1384,7 @@
     // Manage gym pills
     const pills = document.getElementById('manage-gym-pills');
     pills.innerHTML = state.gyms
-      .map(
-        (g) => `
-      <button type="button" class="gym-pill ${g.id === ui.manageGymId ? 'active' : ''}" data-mgym="${g.id}">
-        ${escapeHtml(g.name)}
-      </button>
-    `
-      )
+      .map((g) => renderGymPillHtml(g, g.id === ui.manageGymId, 'data-mgym'))
       .join('');
     pills.querySelectorAll('.gym-pill').forEach((b) => {
       b.addEventListener('click', () => {

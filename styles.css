@@ -382,6 +382,73 @@ html, body {
   transform: scale(0.96);
 }
 
+.gym-pill.has-logo {
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.gym-pill.has-logo.brand-fitplace {
+  background: #0F1012;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.gym-pill.has-logo.brand-totalworkout {
+  background: #C81018;
+  border-color: rgba(200, 16, 24, 0.45);
+}
+
+.gym-pill.has-logo.active {
+  opacity: 1;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(255, 77, 46, 0.25), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.gym-pill.has-logo.brand-fitplace.active {
+  background: #0F1012;
+  border-color: #C8F000;
+  box-shadow: 0 0 0 2px rgba(200, 240, 0, 0.24), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.gym-pill.has-logo.brand-totalworkout.active {
+  background: #C81018;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(200, 16, 24, 0.45), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.gym-logo-img {
+  height: 22px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.gym-list-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 7px;
+  margin-bottom: 4px;
+}
+
+.gym-list-logo-wrap.brand-fitplace {
+  background: #0F1012;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gym-list-logo-wrap.brand-totalworkout {
+  background: #C81018;
+}
+
+.gym-logo-list {
+  height: 20px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
 /* Part Filter Tabs */
 .part-tabs {
   display: grid;
