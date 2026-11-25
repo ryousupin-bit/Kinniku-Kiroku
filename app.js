@@ -442,11 +442,15 @@
   });
 
   // ---------- Rest Timer (Center Shiba Arm-Curl Overlay) ----------
+  const TIMER_STORAGE_KEY = 'ironlog_rest_timer_v1';
+  const REST_EXPIRED_GRACE_MS = 10 * 60 * 1000;
   let restInterval = null;
+  let restEndTime = null;
   let restRemaining = 0;
   let restTotal = 0;
   let restLastPreset = 90;
   let restFinished = false;
+  let restFinishNotified = false;
   const SHIBA_RING_CIRCUMFERENCE = 2 * Math.PI * 108;
 
   const shibaOverlay = document.getElementById('shiba-timer-overlay');
@@ -464,6 +468,48 @@
     const m = Math.floor(safe / 60);
     const s = String(safe % 60).padStart(2, '0');
     return `${m}:${s}`;
+  }
+
+  function isShibaOverlayOpen() {
+    return Boolean(shibaOverlay && shibaOverlay.classList.contains('open'));
+  }
+
+  function clearRestTimerState() {
+    try {
+      localStorage.removeItem(TIMER_STORAGE_KEY);
+    } catch {}
+  }
+
+  function saveRestTimerState() {
+    if (restEndTime === null) {
+      clearRestTimerState();
+      return;
+    }
+    try {
+      localStorage.setItem(
+        TIMER_STORAGE_KEY,
+        JSON.stringify({
+          endTime: restEndTime,
+          total: restTotal,
+          lastPreset: restLastPreset,
+          overlayOpen: isShibaOverlayOpen()
+        })
+      );
+    } catch {}
+  }
+
+  function loadRestTimerState() {
+    try {
+      const raw = localStorage.getItem(TIMER_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.endTime !== 'number' || !Number.isFinite(parsed.endTime)) {
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
   }
 
   function updateTimerPill() {
@@ -513,6 +559,9 @@
     if (!shibaOverlay) return;
     updateShibaOverlayUI();
     shibaOverlay.classList.add('open');
+    if (restEndTime !== null) {
+      saveRestTimerState();
+    }
   }
 
   function closeShibaTimerOverlay() {
@@ -520,51 +569,153 @@
     shibaOverlay.classList.remove('open');
     if (restFinished) {
       restFinished = false;
+      restFinishNotified = false;
+      updateTimerPill();
+    } else if (restEndTime !== null) {
+      saveRestTimerState();
+    }
+  }
+
+  function notifyRestTimerFinished() {
+    if (restFinishNotified || document.hidden) return;
+    restFinishNotified = true;
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    showToast('インターバル終了！次のセットへ');
+  }
+
+  function finishRestTimer() {
+    clearInterval(restInterval);
+    restInterval = null;
+    restEndTime = null;
+    restRemaining = 0;
+    restFinished = true;
+    restFinishNotified = false;
+    clearRestTimerState();
+    updateTimerPill();
+    openShibaTimerOverlay();
+    notifyRestTimerFinished();
+  }
+
+  function ensureRestTimerTick() {
+    if (restInterval !== null) return;
+    restInterval = setInterval(() => {
+      syncRestTimer(false);
+    }, 250);
+  }
+
+  function syncRestTimer(forceRender = false) {
+    if (restEndTime === null) {
+      if (restFinished && !restFinishNotified && !document.hidden) {
+        notifyRestTimerFinished();
+      }
+      return;
+    }
+    const remainingMs = restEndTime - Date.now();
+    if (remainingMs <= 0) {
+      finishRestTimer();
+      return;
+    }
+    const nextRemaining = Math.ceil(remainingMs / 1000);
+    if (forceRender || nextRemaining !== restRemaining) {
+      restRemaining = nextRemaining;
       updateTimerPill();
     }
   }
 
   function startRestTimer(seconds) {
     clearInterval(restInterval);
+    restInterval = null;
     restLastPreset = seconds;
     restTotal = seconds;
     restRemaining = seconds;
+    restEndTime = Date.now() + seconds * 1000;
     restFinished = false;
+    restFinishNotified = false;
     updateTimerPill();
     openShibaTimerOverlay();
-    restInterval = setInterval(() => {
-      restRemaining--;
-      if (restRemaining <= 0) {
-        clearInterval(restInterval);
-        restInterval = null;
-        restRemaining = 0;
-        restFinished = true;
-        updateTimerPill();
-        openShibaTimerOverlay();
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        showToast('インターバル終了！次のセットへ');
-      } else {
-        updateTimerPill();
-      }
-    }, 1000);
+    saveRestTimerState();
+    ensureRestTimerTick();
   }
 
   function adjustRestTimer(delta) {
-    if (restFinished || restRemaining <= 0) return;
-    restRemaining = Math.max(5, restRemaining + delta);
+    if (restFinished || restEndTime === null) return;
+    const now = Date.now();
+    const currentRemainingMs = restEndTime - now;
+    if (currentRemainingMs <= 0) {
+      finishRestTimer();
+      return;
+    }
+    const nextRemainingMs = Math.max(5000, currentRemainingMs + delta * 1000);
+    restEndTime = now + nextRemainingMs;
+    restRemaining = Math.ceil(nextRemainingMs / 1000);
     if (restRemaining > restTotal) restTotal = restRemaining;
+    saveRestTimerState();
     updateTimerPill();
   }
 
   function stopRestTimer() {
     clearInterval(restInterval);
     restInterval = null;
+    restEndTime = null;
     restRemaining = 0;
     restTotal = 0;
     restFinished = false;
+    restFinishNotified = false;
+    clearRestTimerState();
     closeShibaTimerOverlay();
     updateTimerPill();
   }
+
+  function restoreRestTimer() {
+    const saved = loadRestTimerState();
+    if (!saved) return;
+
+    if (typeof saved.lastPreset === 'number' && saved.lastPreset > 0) {
+      restLastPreset = saved.lastPreset;
+    }
+
+    const now = Date.now();
+    const remainingMs = saved.endTime - now;
+
+    if (remainingMs > 0) {
+      restEndTime = saved.endTime;
+      restRemaining = Math.ceil(remainingMs / 1000);
+      restTotal =
+        typeof saved.total === 'number' && saved.total > 0
+          ? Math.max(saved.total, restRemaining)
+          : restRemaining;
+      restFinished = false;
+      restFinishNotified = false;
+      updateTimerPill();
+      if (saved.overlayOpen) {
+        openShibaTimerOverlay();
+      }
+      ensureRestTimerTick();
+    } else if (now - saved.endTime <= REST_EXPIRED_GRACE_MS) {
+      restTotal = typeof saved.total === 'number' && saved.total > 0 ? saved.total : restLastPreset;
+      finishRestTimer();
+    } else {
+      clearRestTimerState();
+    }
+  }
+
+  function handleTimerResume() {
+    if (document.hidden) return;
+    if (restEndTime !== null) {
+      clearInterval(restInterval);
+      restInterval = null;
+      syncRestTimer(true);
+      if (restEndTime !== null) {
+        ensureRestTimerTick();
+      }
+    } else if (restFinished && !restFinishNotified) {
+      notifyRestTimerFinished();
+    }
+  }
+
+  document.addEventListener('visibilitychange', handleTimerResume);
+  window.addEventListener('pageshow', handleTimerResume);
+  window.addEventListener('focus', handleTimerResume);
 
   if (shibaOverlay) {
     document.getElementById('shiba-timer-hide-btn').addEventListener('click', closeShibaTimerOverlay);
@@ -588,6 +739,9 @@
   }
 
   document.getElementById('rest-timer-btn').addEventListener('click', () => {
+    if (restEndTime !== null) {
+      syncRestTimer(true);
+    }
     if (restRemaining > 0 || restFinished) {
       openShibaTimerOverlay();
       return;
@@ -2168,4 +2322,5 @@
   // Initial Render
   applyTheme();
   renderLogView();
+  restoreRestTimer();
 })();
