@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>筋肉記録 - プライベート筋トレログ</title>
+  <meta name="description" content="ジム別・部位別の種目登録、kg/lb自動変換、バー重量自動加算、自動ローテーションカレンダー、1ヶ月前比較グラフを備えたiPhone向けプライベートトレーニング記録アプリ" />
+  <meta name="theme-color" content="#090A0D" id="meta-theme-color" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="筋肉記録" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-group">
+        <h1 class="app-title">
+          <span class="brand-mark" aria-hidden="true"><img src="./shiba-mark.png" alt="" width="28" height="28" /></span>
+          筋肉記録
+        </h1>
+        <span class="header-subtitle" id="header-subtitle">今日のトレーニング</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="timer-pill tabular" id="rest-timer-btn" aria-label="レストタイマー">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/>
+          </svg>
+          <span id="rest-timer-text">タイマー</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Views -->
+    <main class="app-main">
+      <!-- 1. Log View -->
+      <section class="view active" id="view-log" aria-label="トレーニング記録">
+        <div class="session-bar">
+          <div class="date-nav-row">
+            <button type="button" class="icon-btn" id="btn-prev-day" aria-label="前の日">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div class="date-center" id="btn-jump-today" title="タップで今日に戻る">
+              <div class="date-main tabular" id="log-date-label">2026年11月24日 (火)</div>
+              <div class="date-sub" id="log-date-status"></div>
+            </div>
+            <button type="button" class="icon-btn" id="btn-next-day" aria-label="次の日">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="gym-pills" id="log-gym-pills" role="tablist" aria-label="ジム選択"></div>
+        </div>
+
+        <div class="summary-strip" id="log-summary-strip">
+          <div class="summary-box">
+            <div class="summary-val tabular" id="sum-sets">0</div>
+            <div class="summary-lbl">セット数</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-val tabular" id="sum-volume">0 kg</div>
+            <div class="summary-lbl">総ボリューム</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-val" id="sum-part">-</div>
+            <div class="summary-lbl">記録部位</div>
+          </div>
+        </div>
+
+        <div class="part-tabs" id="log-part-tabs" role="tablist" aria-label="部位フィルタ">
+          <button type="button" class="part-tab active" data-part="back"><span class="part-dot" style="background:var(--back)"></span>背中</button>
+          <button type="button" class="part-tab" data-part="chest"><span class="part-dot" style="background:var(--chest)"></span>胸</button>
+          <button type="button" class="part-tab" data-part="shoulders"><span class="part-dot" style="background:var(--shoulders)"></span>肩</button>
+          <button type="button" class="part-tab" data-part="legs"><span class="part-dot" style="background:var(--legs)"></span>脚</button>
+        </div>
+
+        <div id="log-exercises-container"></div>
+
+        <button type="button" class="btn btn-outline btn-block" id="btn-quick-add-exercise" style="margin-top: 8px;">
+          + このジム・部位に種目を追加
+        </button>
+      </section>
+
+      <!-- 2. Calendar View -->
+      <section class="view" id="view-calendar" aria-label="カレンダー">
+        <div class="card">
+          <div class="cal-header">
+            <button type="button" class="icon-btn" id="btn-cal-prev" aria-label="前の月">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h2 class="cal-month-title tabular" id="cal-month-label">2026年 11月</h2>
+            <button type="button" class="icon-btn" id="btn-cal-next" aria-label="次の月">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="cal-weekdays">
+            <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+
+          <div class="cal-legend">
+            <span class="cal-legend-item"><span class="legend-swatch" style="background:var(--chest)"></span>実績(濃)</span>
+            <span class="cal-legend-item"><span class="legend-swatch" style="background:var(--chest-bg)"></span>ローテ予定(淡)</span>
+            <span class="cal-legend-item"><span class="legend-swatch" style="background:var(--rest-bg)"></span>休み</span>
+          </div>
+        </div>
+
+        <div class="card cal-day-detail" id="cal-day-detail"></div>
+      </section>
+
+      <!-- 3. Gyms & Exercises View -->
+      <section class="view" id="view-gyms" aria-label="ジムと種目の管理">
+        <div class="section-label">
+          <span>ジムのプリセット</span>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-add-gym">+ ジム追加</button>
+        </div>
+        <div class="card" id="gyms-list-container"></div>
+
+        <div class="section-label" style="margin-top: 20px;">
+          <span id="manage-ex-heading">登録種目</span>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-add-exercise">+ 種目追加</button>
+        </div>
+        <div class="gym-pills" id="manage-gym-pills" style="margin-bottom: 10px;"></div>
+        <div class="part-tabs" id="manage-part-tabs">
+          <button type="button" class="part-tab active" data-part="back"><span class="part-dot" style="background:var(--back)"></span>背中</button>
+          <button type="button" class="part-tab" data-part="chest"><span class="part-dot" style="background:var(--chest)"></span>胸</button>
+          <button type="button" class="part-tab" data-part="shoulders"><span class="part-dot" style="background:var(--shoulders)"></span>肩</button>
+          <button type="button" class="part-tab" data-part="legs"><span class="part-dot" style="background:var(--legs)"></span>脚</button>
+        </div>
+        <div class="card" id="manage-exercises-container"></div>
+      </section>
+
+      <!-- 4. Settings View -->
+      <section class="view" id="view-settings" aria-label="設定">
+        <div class="section-label"><span>カレンダー自動ローテーション</span></div>
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label" for="setting-rot-start">ローテーション基準日（1日目）</label>
+            <input type="date" id="setting-rot-start" class="form-input tabular" />
+          </div>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label">サイクル順番（タップで部位を変更）</label>
+            <div class="rotation-chips" id="rotation-chips"></div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-rot-add">+ 1日追加</button>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-rot-reset">デフォルトに戻す</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label"><span>表示・テーマ</span></div>
+        <div class="card">
+          <div class="toggle-row" style="margin-bottom: 0;">
+            <div class="toggle-info">
+              <span class="toggle-title">ダークモード</span>
+              <span class="toggle-desc">暗いジム内でも見やすい配色に切り替え</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setting-dark-mode" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-label"><span>データ管理（プライベート保存）</span></div>
+        <div class="card">
+          <p style="margin:0 0 12px; font-size:13px; color:var(--text-secondary);">
+            すべての記録はこのiPhone内（ブラウザ）にのみ保存されます。機種変更時などはJSONでバックアップできます。
+          </p>
+          <div style="display:flex; gap:8px; margin-bottom: 8px;">
+            <button type="button" class="btn btn-secondary btn-sm" style="flex:1" id="btn-export-data">バックアップ書き出し</button>
+            <button type="button" class="btn btn-outline btn-sm" style="flex:1" id="btn-import-data">データ復元</button>
+            <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+          </div>
+          <button type="button" class="btn btn-danger btn-sm btn-block" id="btn-reset-demo">初期データにリセット</button>
+        </div>
+
+        <div class="section-label"><span>iPhoneホーム画面への追加方法</span></div>
+        <div class="card" style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+          1. このページをiPhoneの <strong>Safari</strong> で開きます。<br />
+          2. 画面下部の <strong>共有ボタン（□↑）</strong> をタップします。<br />
+          3. <strong>「ホーム画面に追加」</strong> を選んで追加すると、フルスクリーンのアプリとしてオフラインでも利用できます。
+        </div>
+      </section>
+      <!-- 5. Progress Graph View -->
+      <section class="view" id="view-progress" aria-label="負荷推移グラフ">
+        <div class="progress-part-pills" id="progress-part-pills">
+          <button type="button" class="progress-pill active" data-ppart="all">すべて</button>
+          <button type="button" class="progress-pill" data-ppart="back"><span class="part-dot" style="background:var(--back)"></span>背中</button>
+          <button type="button" class="progress-pill" data-ppart="chest"><span class="part-dot" style="background:var(--chest)"></span>胸</button>
+          <button type="button" class="progress-pill" data-ppart="shoulders"><span class="part-dot" style="background:var(--shoulders)"></span>肩</button>
+          <button type="button" class="progress-pill" data-ppart="legs"><span class="part-dot" style="background:var(--legs)"></span>脚</button>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <select id="progress-ex-select" class="form-select" aria-label="種目で絞り込む"></select>
+        </div>
+
+        <div class="segmented" id="progress-metric-seg" style="margin-bottom: 12px;">
+          <button type="button" class="segmented-btn active" data-metric="volume">総負荷量 (kg)</button>
+          <button type="button" class="segmented-btn" data-metric="maxWeight">最大重量 (kg)</button>
+          <button type="button" class="segmented-btn" data-metric="e1rm">推定1RM (kg)</button>
+        </div>
+
+        <div class="card" id="progress-compare-card"></div>
+
+        <div class="section-label"><span>過去60日間の負荷推移（1ヶ月前との比較）</span></div>
+        <div class="card" id="progress-chart-card"></div>
+
+        <div class="section-label"><span>種目別 1ヶ月前比較</span></div>
+        <div class="card" id="progress-exercise-list"></div>
+      </section>
+    </main>
+
+    <!-- Bottom Tab Bar -->
+    <nav class="tabbar" aria-label="メインナビゲーション">
+      <button type="button" class="tab-btn active" data-tab="log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/></svg>
+        <span>記録</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="progress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>グラフ</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>カレンダー</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="gyms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+        <span>ジム・種目</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>設定</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Bottom Sheet Modal -->
+  <div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-sheet" id="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="modal-title">タイトル</h3>
+        <button type="button" class="icon-btn ghost" id="modal-close-btn" aria-label="閉じる">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Center Shiba Curl Timer Overlay -->
+  <div class="shiba-timer-overlay" id="shiba-timer-overlay" role="dialog" aria-modal="true" aria-label="レストタイマー">
+    <div class="shiba-timer-card" id="shiba-timer-card">
+      <div class="shiba-timer-top">
+        <span class="shiba-timer-badge" id="shiba-timer-badge">REST TIMER</span>
+        <button type="button" class="icon-btn ghost" id="shiba-timer-hide-btn" aria-label="最小化">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="shiba-stage" id="shiba-stage">
+        <div class="shiba-glow" aria-hidden="true"></div>
+        <svg class="shiba-ring" viewBox="0 0 240 240" aria-hidden="true">
+          <circle class="shiba-ring-track" cx="120" cy="120" r="108" />
+          <circle class="shiba-ring-progress" id="shiba-ring-progress" cx="120" cy="120" r="108" />
+        </svg>
+
+        <!-- Logo-Matched Tail-Wagging Shiba Mascot -->
+        <div class="shiba-sprite-wrap" aria-hidden="true">
+          <img class="shiba-tail-img" src="./shiba-tail.png" alt="" />
+          <img class="shiba-body-img" src="./shiba-body.png" alt="" />
+        </div>
+      </div>
+
+      <div class="shiba-timer-readout">
+        <div class="shiba-timer-time tabular" id="shiba-timer-time">1:30</div>
+        <div class="shiba-timer-sub" id="shiba-timer-sub">次のセットに備えよう</div>
+      </div>
+
+      <div class="shiba-timer-adjust" id="shiba-timer-adjust">
+        <button type="button" class="btn btn-secondary btn-sm" id="shiba-timer-minus">-15秒</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="shiba-timer-plus">+15秒</button>
+      </div>
+
+      <div class="shiba-timer-actions">
+        <button type="button" class="btn btn-secondary btn-sm" id="shiba-timer-bg-btn">記録に戻る</button>
+        <button type="button" class="btn btn-danger btn-sm" id="shiba-timer-stop-btn">停止</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PR Congratulations Popup -->
+  <div class="shiba-pr-overlay" id="shiba-pr-overlay" role="dialog" aria-modal="true" aria-label="自己ベスト更新">
+    <div class="shiba-pr-card" id="shiba-pr-card">
+      <div class="shiba-pr-confetti" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="shiba-pr-badge">NEW RECORD</div>
+      <div class="shiba-pr-title">Congratulations!</div>
+
+      <div class="shiba-pr-stage" aria-hidden="true">
+        <div class="shiba-pr-glow"></div>
+        <div class="shiba-pr-sprite">
+          <img class="shiba-tail-img" src="./shiba-tail.png" alt="" />
+          <img class="shiba-body-img" src="./shiba-body.png" alt="" />
+        </div>
+      </div>
+
+      <div class="shiba-pr-ex" id="shiba-pr-ex">種目名</div>
+      <div class="shiba-pr-vol tabular" id="shiba-pr-vol">0 kg</div>
+      <div class="shiba-pr-diff tabular" id="shiba-pr-diff">過去最高を更新！</div>
+
+      <button type="button" class="btn btn-primary btn-block" id="shiba-pr-close-btn">閉じる</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

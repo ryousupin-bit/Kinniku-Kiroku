@@ -1,0 +1,30 @@
+{
+  "name": "筋肉記録",
+  "short_name": "筋肉記録",
+  "description": "ジム別・部位別の種目登録、kg/lb自動変換、バー重量自動加算、自動ローテーションカレンダー、1ヶ月前比較グラフを備えたiPhone向けプライベート筋トレ記録アプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090A0D",
+  "theme_color": "#090A0D",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
